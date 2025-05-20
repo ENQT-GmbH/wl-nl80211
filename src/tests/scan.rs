@@ -210,7 +210,7 @@ fn test_parse_ies() {
     let expected = Nl80211Elements(vec![
         Nl80211Element::Other(73, vec![]),
         Nl80211Element::Other(6, vec![]),
-        Nl80211Element::Ssid("Test-WIFI".to_string()),
+        Nl80211Element::Ssid("Test-WIFI".into()),
         Nl80211Element::SupportedRatesAndSelectors(vec![
             Nl80211RateAndSelector::BssBasicRateSet(2),
             Nl80211RateAndSelector::BssBasicRateSet(4),

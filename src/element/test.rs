@@ -10,7 +10,7 @@ use super::{
 
 #[test]
 fn ssid() {
-    let val: Nl80211Element = Nl80211Element::Ssid("test-ssid".to_owned());
+    let val: Nl80211Element = Nl80211Element::Ssid("test-ssid".into());
     let mut buffer = vec![0; val.buffer_len() + 1];
     val.emit(buffer.as_mut_slice());
     assert_eq!(
