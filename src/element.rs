@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 
 use anyhow::Context;
+use bstr::BString;
 use netlink_packet_utils::{
-    parsers::{parse_string, parse_u8},
-    DecodeError, Emitable, Parseable,
+    parsers::parse_u8, DecodeError, Emitable, Parseable,
 };
 
 use crate::{
@@ -70,7 +70,7 @@ const ELEMENT_ID_VENDOR: u8 = 221;
 #[derive(Debug, PartialEq, Eq, Clone)]
 #[non_exhaustive]
 pub enum Nl80211Element {
-    Ssid(String),
+    Ssid(BString),
     /// Supported rates in units of 500 kb/s, if necessary rounded up to the
     /// next 500 kb/
     SupportedRatesAndSelectors(Vec<Nl80211RateAndSelector>),
@@ -126,10 +126,7 @@ impl<T: AsRef<[u8]> + ?Sized> Parseable<T> for Nl80211Element {
         let length = buf[1];
         let payload = &buf[2..length as usize + 2];
         Ok(match id {
-            ELEMENT_ID_SSID => Self::Ssid(
-                parse_string(payload)
-                    .context(format!("Invalid SSID {payload:?}"))?,
-            ),
+            ELEMENT_ID_SSID => Self::Ssid(BString::from(payload)),
             ELEMENT_ID_SUPPORTED_RATES => Self::SupportedRatesAndSelectors(
                 payload
                     .iter()
@@ -165,7 +162,7 @@ impl Emitable for Nl80211Element {
             Self::Ssid(s) => {
                 // IEEE 802.11-2020 indicate it is optional to have NULL
                 // terminator for this string.
-                payload.copy_from_slice(s.as_bytes());
+                payload.copy_from_slice(s.as_slice());
             }
             Self::SupportedRatesAndSelectors(v) => {
                 let raw: Vec<u8> =
@@ -1003,7 +1000,7 @@ mod test {
     roundtrip_emit_parse_test!(
         ssid,
         Nl80211Element,
-        Nl80211Element::Ssid("test-ssid".to_owned()),
+        Nl80211Element::Ssid(BString::from("test-ssid")),
     );
     roundtrip_emit_parse_test!(
         rates_and_selectors,
