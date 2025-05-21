@@ -31,7 +31,7 @@ fn test_trigger_scan() {
             cmd: Nl80211Command::TriggerScan,
             attributes: vec![
                 Nl80211Attr::IfIndex(2),
-                Nl80211Attr::ScanSsids(vec![String::new()]),
+                Nl80211Attr::ScanSsids(vec![bstr::BString::new(Vec::new())]),
                 Nl80211Attr::ScanFlags(Nl80211ScanFlags::Colocated6Ghz),
             ],
         },

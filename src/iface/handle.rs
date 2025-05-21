@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+use bstr::BString;
 
 use crate::{
     Nl80211Attr, Nl80211AttrsBuilder, Nl80211Handle,
@@ -37,7 +38,7 @@ impl Nl80211NewInterface {
     pub fn new(
         wiphy_id: u32,
         if_type: Nl80211InterfaceType,
-        if_name: String,
+        if_name: BString,
     ) -> Nl80211AttrsBuilder<Self> {
         Nl80211AttrsBuilder::<Self>::new()
             .replace(Nl80211Attr::Wiphy(wiphy_id))

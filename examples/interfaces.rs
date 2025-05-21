@@ -25,6 +25,7 @@
 //! is one hex string instead of individual bytes as arguments.
 
 use anyhow::{anyhow, bail, Context};
+use bstr::BString;
 use futures::stream::TryStreamExt;
 use log::{debug, info};
 use std::env;
@@ -64,7 +65,7 @@ fn main() -> anyhow::Result<()> {
                 })
                 .ok_or_else(|| anyhow!("No type specified"))
                 .flatten()?;
-            rt.block_on(new_interface(handle, phy_name, if_name, if_type))
+            rt.block_on(new_interface(handle, phy_name, if_name.into(), if_type))
         }
         Some("del") => {
             let if_name = args
@@ -115,7 +116,7 @@ fn main() -> anyhow::Result<()> {
 async fn new_interface(
     handle: Nl80211Handle,
     wiphy_name: String,
-    if_name: String,
+    if_name: BString,
     if_type: Nl80211InterfaceType,
 ) -> anyhow::Result<()> {
     let mut wiphy_attributes = std::pin::pin!(handle
